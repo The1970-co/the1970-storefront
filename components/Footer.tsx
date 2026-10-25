@@ -1,0 +1,2 @@
+import type {MarketCode} from '@/types/storefront';
+export default function Footer({market}:{market:MarketCode}){return <footer className="footer wrap"><div><div className="logo">THE 1970</div><p className="muted">Vintage American mood, refined for The 1970.</p></div><div><b>{market==='VN'?'HỖ TRỢ':'CUSTOMER CARE'}</b><p className="muted">Shipping<br/>Returns<br/>Size guide<br/>Contact</p></div><div><b>{market==='VN'?'THỊ TRƯỜNG':'MARKET'}</b><p className="muted">{market==='VN'?'Vietnam · VND':'International · USD'}</p></div></footer>}

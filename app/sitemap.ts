@@ -1,0 +1,2 @@
+import type {MetadataRoute} from 'next';import {getProducts} from '@/lib/core-api';
+export default async function sitemap():Promise<MetadataRoute.Sitemap>{const products=await getProducts('VN');const base='https://the1970.vn';return [{url:base,changeFrequency:'daily',priority:1},{url:`${base}/collections/all`,changeFrequency:'daily',priority:.9},...products.map(p=>({url:`${base}/${p.slug}`,changeFrequency:'weekly' as const,priority:.8}))]}

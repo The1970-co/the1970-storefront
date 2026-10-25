@@ -1,0 +1,1 @@
+export default function Cart(){return <main className="empty wrap"><div className="eyebrow">THE 1970</div><h1>Your bag</h1><p className="muted">Cart state + VN checkout / Shopify checkout will be wired in phase 2.</p></main>}
