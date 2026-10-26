@@ -1,0 +1,1192 @@
+/* THE 1970 — PRODUCT DETAIL
+   Editorial commerce layout inspired by classic American menswear stores.
+   Scoped under .ts-pdp / .ts-guide / .ts-cart to avoid touching homepage CSS.
+*/
+
+.ts-pdp,
+.ts-pdp * {
+  box-sizing: border-box;
+}
+
+.ts-pdp {
+  --ink: #17212a;
+  --muted: #686b68;
+  --line: #d8d9d5;
+  --paper: #ffffff;
+  --soft: #f2f1ed;
+  --blue: #315f8f;
+  --blue-hover: #244c76;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ts-pdp-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(390px, 0.95fr);
+  max-width: 1720px;
+  margin: 0 auto;
+  border-top: 1px solid #ecece8;
+}
+
+.ts-pdp-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  padding: 0 3px 3px 0;
+  background: #fff;
+}
+
+.ts-pdp-image {
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  background: #efefec;
+  min-height: 540px;
+}
+
+.ts-pdp-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 540px;
+  object-fit: cover;
+  transition: transform .65s ease;
+}
+
+.ts-pdp-image:hover img {
+  transform: scale(1.012);
+}
+
+.ts-pdp-image-empty {
+  grid-column: 1 / -1;
+  min-height: 650px;
+  display: grid;
+  place-items: center;
+  background: #efefec;
+  color: #8a8a84;
+}
+
+.ts-pdp-info {
+  min-width: 0;
+  background: #fff;
+  border-left: 1px solid #e3e3de;
+}
+
+.ts-pdp-sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  padding: 34px 38px 48px;
+}
+
+.ts-pdp-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 24px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: #6c706f;
+}
+
+.ts-pdp-breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ts-pdp-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.ts-pdp-rating {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 13px;
+  color: #777266;
+  font-size: 11px;
+}
+
+.ts-pdp-stars {
+  letter-spacing: 1.5px;
+  color: #9a8b58;
+}
+
+.ts-pdp-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 20px;
+  padding-bottom: 17px;
+}
+
+.ts-pdp-title-row h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(25px, 2vw, 35px);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -.025em;
+  color: #18232d;
+}
+
+.ts-pdp-subtitle {
+  margin-top: 5px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  color: #3d464c;
+}
+
+.ts-pdp-price-wrap {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  white-space: nowrap;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.ts-pdp-price-wrap strong {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.ts-pdp-price-wrap del {
+  font-size: 12px;
+  color: #8c8d89;
+}
+
+.ts-pdp-desc {
+  margin: 0 0 27px;
+  max-width: 620px;
+  color: #565b5b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  line-height: 1.72;
+}
+
+.ts-pdp-option {
+  margin-top: 20px;
+}
+
+.ts-pdp-option-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 10px;
+  color: #5c6161;
+  font-size: 11px;
+}
+
+.ts-pdp-option-head strong {
+  color: #18232d;
+  font-weight: 700;
+}
+
+.ts-pdp-guide-link {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: #626866;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.ts-pdp-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ts-pdp-color {
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.ts-pdp-color > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  border: 1px solid rgba(0,0,0,.14);
+}
+
+.ts-pdp-color.is-active {
+  border-color: #18232d;
+}
+
+.ts-pdp-color.is-disabled {
+  opacity: .3;
+}
+
+.ts-pdp-size-section {
+  margin-top: 27px;
+}
+
+.ts-pdp-sizes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.ts-pdp-sizes button {
+  position: relative;
+  min-height: 39px;
+  border: 1px solid #aeb3b3;
+  background: #fff;
+  color: #253139;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+
+.ts-pdp-sizes button:hover:not(:disabled) {
+  border-color: #17212a;
+}
+
+.ts-pdp-sizes button.is-active {
+  background: #172d40;
+  border-color: #172d40;
+  color: #fff;
+}
+
+.ts-pdp-sizes button:disabled {
+  color: #a5a7a4;
+  cursor: not-allowed;
+  background: #fbfbfa;
+}
+
+.ts-pdp-sizes button:disabled i {
+  position: absolute;
+  inset: 50% 5px auto;
+  height: 1px;
+  background: #c9cbc8;
+  transform: rotate(-7deg);
+}
+
+.ts-pdp-message {
+  margin-top: 13px;
+  color: #8a3c34;
+  font-size: 12px;
+}
+
+.ts-pdp-buy-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.ts-pdp-qty {
+  min-height: 51px;
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+  border: 1px solid #b9bdbb;
+}
+
+.ts-pdp-qty button {
+  border: 0;
+  background: transparent;
+  color: #263238;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.ts-pdp-qty span {
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+
+.ts-pdp-add {
+  border: 0;
+  min-height: 51px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.ts-pdp-add:hover:not(:disabled) {
+  background: var(--blue-hover);
+}
+
+.ts-pdp-add:disabled {
+  background: #aeb4b8;
+  cursor: not-allowed;
+}
+
+.ts-pdp-benefits {
+  display: grid;
+  gap: 8px;
+  padding: 31px 0 28px;
+  color: #4d5557;
+  border-bottom: 1px solid var(--line);
+}
+
+.ts-pdp-benefits > div {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ts-pdp-benefits span {
+  width: 14px;
+  flex: 0 0 14px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.ts-pdp-benefits p {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.ts-pdp-accordions {
+  border-bottom: 1px solid var(--line);
+}
+
+.ts-pdp-accordion {
+  border-bottom: 1px solid var(--line);
+}
+
+.ts-pdp-accordion:last-child {
+  border-bottom: 0;
+}
+
+.ts-pdp-accordion > button {
+  width: 100%;
+  min-height: 46px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #313a3f;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.ts-pdp-accordion > button i {
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.ts-pdp-accordion-body {
+  padding: 0 0 18px;
+  color: #596061;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.ts-pdp-spec-list {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 7px 12px;
+  margin: 0;
+}
+
+.ts-pdp-spec-list dt {
+  color: #858886;
+}
+
+.ts-pdp-spec-list dd {
+  margin: 0;
+  color: #353d41;
+}
+
+.ts-pdp-cart-link {
+  margin-top: 19px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #5e6567;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.ts-pdp-story {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 90px 5vw 110px;
+  border-top: 1px solid #e6e6e2;
+  background: #f7f6f2;
+}
+
+.ts-pdp-story-label {
+  margin-bottom: 24px;
+  color: #7c807d;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.ts-pdp-story-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
+  gap: 80px;
+}
+
+.ts-pdp-story h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(32px, 4vw, 58px);
+  font-weight: 400;
+  line-height: .98;
+  letter-spacing: -.035em;
+}
+
+.ts-pdp-story-copy {
+  max-width: 780px;
+  color: #4e5454;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.85;
+  white-space: pre-line;
+}
+
+.ts-pdp-related {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 70px 28px 110px;
+  background: #fff;
+}
+
+.ts-pdp-related-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.ts-pdp-related-head h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.ts-pdp-related-head a {
+  color: #52595b;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ts-pdp-related-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.ts-pdp-related-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ts-pdp-related-image {
+  position: relative;
+  aspect-ratio: .78 / 1;
+  overflow: hidden;
+  background: #efefec;
+}
+
+.ts-pdp-related-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .55s ease;
+}
+
+.ts-pdp-related-card:hover img {
+  transform: scale(1.025);
+}
+
+.ts-pdp-related-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 6px 8px;
+  background: rgba(255,255,255,.9);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ts-pdp-related-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 2px 0;
+}
+
+.ts-pdp-related-info h3 {
+  margin: 0 0 3px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.ts-pdp-related-info p,
+.ts-pdp-related-info strong {
+  margin: 0;
+  color: #686c69;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+/* SIZE GUIDE DRAWER */
+.ts-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  pointer-events: none;
+}
+
+.ts-guide.is-open {
+  pointer-events: auto;
+}
+
+.ts-guide-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(12, 19, 24, .22);
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.ts-guide.is-open .ts-guide-backdrop {
+  opacity: 1;
+}
+
+.ts-guide-panel {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(620px, 92vw);
+  overflow-y: auto;
+  background: #fff;
+  color: #27333b;
+  transform: translateX(-100%);
+  transition: transform .3s ease;
+  box-shadow: 12px 0 42px rgba(0,0,0,.08);
+}
+
+.ts-guide.is-open .ts-guide-panel {
+  transform: translateX(0);
+}
+
+.ts-guide-head {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  border-bottom: 1px solid #e4e5e2;
+}
+
+.ts-guide-head h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.ts-guide-head button {
+  border: 0;
+  background: transparent;
+  color: #27333b;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.ts-guide-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid #e5e6e3;
+  background: #f7f7f5;
+}
+
+.ts-guide-tabs button {
+  height: 42px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #838683;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .11em;
+}
+
+.ts-guide-tabs button.is-active {
+  border-bottom-color: #263641;
+  background: #fff;
+  color: #263641;
+}
+
+.ts-guide-content {
+  padding: 42px 36px 70px;
+}
+
+.ts-guide-content h3 {
+  margin: 0 0 16px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 400;
+}
+
+.ts-guide-intro {
+  max-width: 500px;
+  margin: 0 0 22px;
+  color: #737876;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.ts-guide-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 50px;
+}
+
+.ts-guide-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 470px;
+}
+
+.ts-guide-table-wrap th,
+.ts-guide-table-wrap td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #ebece9;
+  text-align: left;
+  font-size: 10px;
+}
+
+.ts-guide-table-wrap th {
+  color: #555d60;
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+
+.ts-guide-how {
+  position: relative;
+  min-height: 430px;
+}
+
+.ts-guide-measure-grid {
+  width: 58%;
+  display: grid;
+  gap: 22px;
+}
+
+.ts-guide-measure {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 8px;
+}
+
+.ts-guide-measure > span {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #edf0ef;
+  color: #6d7475;
+  font-size: 8px;
+}
+
+.ts-guide-measure strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 9px;
+  letter-spacing: .08em;
+}
+
+.ts-guide-measure p {
+  margin: 0;
+  color: #757a78;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.ts-guide-shirt-diagram {
+  position: absolute;
+  right: -8px;
+  top: 45px;
+  width: 42%;
+  color: #6b7374;
+}
+
+.ts-guide-shirt-diagram svg {
+  width: 100%;
+  height: auto;
+}
+
+/* CART */
+.ts-cart {
+  position: fixed;
+  inset: 0;
+  z-index: 3100;
+  pointer-events: none;
+}
+
+.ts-cart.is-open {
+  pointer-events: auto;
+}
+
+.ts-cart-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(11,18,23,.28);
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.ts-cart.is-open .ts-cart-backdrop {
+  opacity: 1;
+}
+
+.ts-cart-panel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(460px, 94vw);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: #fff;
+  transform: translateX(100%);
+  transition: transform .3s ease;
+}
+
+.ts-cart.is-open .ts-cart-panel {
+  transform: translateX(0);
+}
+
+.ts-cart-panel > header {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #e3e3df;
+}
+
+.ts-cart-panel > header h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.ts-cart-panel > header button {
+  border: 0;
+  background: transparent;
+  font-size: 29px;
+  cursor: pointer;
+}
+
+.ts-cart-body {
+  overflow-y: auto;
+  padding: 18px 24px;
+}
+
+.ts-cart-empty {
+  padding: 40px 0;
+  color: #777b79;
+  font-size: 12px;
+}
+
+.ts-cart-item {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e5e1;
+}
+
+.ts-cart-item-image {
+  aspect-ratio: .8 / 1;
+  background: #f0f0ed;
+  overflow: hidden;
+}
+
+.ts-cart-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ts-cart-item-info > a {
+  color: #273239;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.ts-cart-item-info p {
+  margin: 5px 0 12px;
+  color: #777c79;
+  font-size: 10px;
+}
+
+.ts-cart-item-info > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 10px;
+}
+
+.ts-cart-item-info > button {
+  margin-top: 12px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #8b4b43;
+  font-size: 10px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ts-cart-panel > footer {
+  padding: 20px 24px 24px;
+  border-top: 1px solid #e3e3df;
+}
+
+.ts-cart-panel > footer > div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.ts-cart-panel > footer > button {
+  width: 100%;
+  min-height: 50px;
+  border: 0;
+  background: #315f8f;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+@media (max-width: 1180px) {
+  .ts-pdp-shell {
+    grid-template-columns: minmax(0, 1.35fr) minmax(360px, .85fr);
+  }
+
+  .ts-pdp-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .ts-pdp-sticky {
+    padding: 28px 28px 42px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ts-pdp-shell {
+    display: block;
+  }
+
+  .ts-pdp-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-right: 0;
+  }
+
+  .ts-pdp-info {
+    border-left: 0;
+    border-top: 1px solid #e3e3de;
+  }
+
+  .ts-pdp-sticky {
+    position: static;
+    min-height: 0;
+  }
+
+  .ts-pdp-story-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .ts-pdp-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .ts-pdp-gallery {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 2px;
+    scrollbar-width: none;
+  }
+
+  .ts-pdp-gallery::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ts-pdp-image {
+    min-width: 88vw;
+    min-height: 0;
+    aspect-ratio: .78 / 1;
+    scroll-snap-align: start;
+  }
+
+  .ts-pdp-image img {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .ts-pdp-sticky {
+    padding: 24px 18px 38px;
+  }
+
+  .ts-pdp-title-row {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .ts-pdp-price-wrap {
+    justify-items: start;
+  }
+
+  .ts-pdp-sizes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ts-pdp-buy-row {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
+  .ts-pdp-story {
+    padding: 60px 20px 70px;
+  }
+
+  .ts-pdp-story-copy {
+    font-size: 15px;
+  }
+
+  .ts-pdp-related {
+    padding: 52px 14px 80px;
+  }
+
+  .ts-pdp-related-grid {
+    gap: 8px;
+  }
+
+  .ts-pdp-related-info {
+    display: block;
+  }
+
+  .ts-pdp-related-info strong {
+    display: block;
+    margin-top: 7px;
+  }
+
+  .ts-guide-head {
+    padding: 0 20px;
+  }
+
+  .ts-guide-content {
+    padding: 30px 20px 60px;
+  }
+
+  .ts-guide-measure-grid {
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .ts-guide-shirt-diagram {
+    position: static;
+    width: 62%;
+    margin: 30px auto 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-pdp *,
+  .ts-guide *,
+  .ts-cart * {
+    transition: none !important;
+  }
+}
+
+
+/* ===== V2 — FULL BLEED PRODUCT PAGE / TS-LIKE PROPORTIONS ===== */
+
+/* Break out of any parent max-width container in layout */
+.ts-pdp {
+  width: 100vw;
+  max-width: none !important;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow-x: clip;
+}
+
+.ts-pdp-shell {
+  width: 100%;
+  max-width: none !important;
+  margin: 0 !important;
+  grid-template-columns: minmax(0, 2.08fr) minmax(430px, .92fr);
+  align-items: stretch;
+}
+
+/* Taylor Stitch-like visual rhythm:
+   large editorial image tiles on left, commerce panel on right */
+.ts-pdp-gallery {
+  width: 100%;
+  gap: 2px;
+  padding: 0 2px 2px 0;
+  align-content: start;
+}
+
+.ts-pdp-image {
+  min-height: 0 !important;
+  aspect-ratio: 0.93 / 1;
+}
+
+.ts-pdp-image img {
+  min-height: 0 !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* First two images dominate the first viewport */
+.ts-pdp-image-1,
+.ts-pdp-image-2 {
+  aspect-ratio: 0.88 / 1;
+}
+
+/* Detail images below can be slightly wider */
+.ts-pdp-image-3,
+.ts-pdp-image-4 {
+  aspect-ratio: 1 / 1;
+}
+
+.ts-pdp-info {
+  width: 100%;
+}
+
+.ts-pdp-sticky {
+  top: 0;
+  padding: 30px 38px 46px;
+}
+
+/* Keep commerce panel visually close to Taylor Stitch density */
+.ts-pdp-title-row h1 {
+  font-size: clamp(25px, 1.75vw, 34px);
+}
+
+.ts-pdp-desc {
+  max-width: 540px;
+}
+
+.ts-pdp-story,
+.ts-pdp-related {
+  max-width: none !important;
+  width: 100%;
+}
+
+/* Recommendations — always full width and visually separate */
+.ts-pdp-related {
+  padding: 74px max(28px, calc((100vw - 1500px) / 2)) 110px;
+  border-top: 1px solid #e7e7e3;
+}
+
+.ts-pdp-related-head {
+  max-width: 1500px;
+  margin: 0 auto 26px;
+}
+
+.ts-pdp-related-grid {
+  max-width: 1500px;
+  margin: 0 auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ts-pdp-related-image {
+  aspect-ratio: .82 / 1;
+  background: #f1f1ee;
+}
+
+.ts-pdp-related-info {
+  padding-top: 11px;
+}
+
+.ts-pdp-related-info h3 {
+  font-size: 14px;
+}
+
+@media (min-width: 1450px) {
+  .ts-pdp-shell {
+    grid-template-columns: minmax(0, 2.18fr) minmax(430px, .82fr);
+  }
+
+  .ts-pdp-sticky {
+    padding-left: 42px;
+    padding-right: 42px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .ts-pdp-shell {
+    grid-template-columns: minmax(0, 1.45fr) minmax(370px, .9fr);
+  }
+
+  .ts-pdp-image {
+    aspect-ratio: .9 / 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .ts-pdp {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .ts-pdp-shell {
+    display: block;
+  }
+
+  .ts-pdp-related {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ts-pdp-related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
