@@ -2,235 +2,111 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import type { PublicWebsiteSettings } from "@/lib/website-settings";
 
-export type StorefrontLocale = "vi" | "en";
-type DropdownKey = "tshirts" | "shirts" | "bottoms";
+type NavLink = { id:string;labelVi:string;labelEn?:string;link:string;enabled:boolean };
+type NavColumn = { id:string;titleVi:string;titleEn?:string;links:NavLink[] };
+type NavItem = {
+  id:string;enabled:boolean;type:"LINK"|"MEGA";labelVi:string;labelEn?:string;
+  link:string;columns:NavColumn[];
+  promo?:{enabled:boolean;imageUrl:string;titleVi:string;titleEn?:string;link:string};
+};
+type NavConfig={version:number;items:NavItem[]};
 
-const copy = {
-  vi: {
-    tshirts: "Áo phông",
-    shirts: "Sơ mi",
-    bottoms: "Quần",
-    arrivals: "Hàng mới",
-    collection: "Bộ sưu tập",
-    search: "Tìm kiếm",
-    cart: "Giỏ hàng",
-    lang: "ENG",
-    allTshirts: "Tất cả áo phông",
-    plainTees: "Áo phông trơn",
-    heritageTees: "Áo phông Heritage",
-    athleisureTees: "Áo phông Athleisure",
-    colorStory: "Theo màu",
-    allShirts: "Tất cả sơ mi",
-    checkedShirts: "Sơ mi kẻ",
-    solidShirts: "Sơ mi trơn",
-    flannelShirts: "Sơ mi Flannel",
-    highlights: "Nổi bật",
-    bestSeller: "Bán chạy",
-    seasonal: "Theo mùa",
-    allBottoms: "Tất cả quần",
-    chinos: "Quần kaki",
-    denim: "Quần jean",
-    shorts: "Quần short",
-    shopByEdit: "Gợi ý",
-    shopTshirts: "Xem áo phông",
-    exploreShirts: "Xem sơ mi",
-    shopBottoms: "Xem quần",
-  },
-  en: {
-    tshirts: "T-Shirts",
-    shirts: "Shirts",
-    bottoms: "Bottoms",
-    arrivals: "New Arrivals",
-    collection: "Collection",
-    search: "Search",
-    cart: "Cart",
-    lang: "VI",
-    allTshirts: "All T-Shirts",
-    plainTees: "Plain Tees",
-    heritageTees: "Heritage Tees",
-    athleisureTees: "Athleisure Tees",
-    colorStory: "Color Story",
-    allShirts: "All Shirts",
-    checkedShirts: "Checked Shirts",
-    solidShirts: "Solid Shirts",
-    flannelShirts: "Flannel Shirts",
-    highlights: "Highlights",
-    bestSeller: "Best Seller",
-    seasonal: "Seasonal Collection",
-    allBottoms: "All Bottoms",
-    chinos: "Chinos",
-    denim: "Denim",
-    shorts: "Shorts",
-    shopByEdit: "Shop By Edit",
-    shopTshirts: "Shop T-Shirts",
-    exploreShirts: "Explore Shirts",
-    shopBottoms: "Shop Bottoms",
-  },
-} as const;
+function base() {
+  return (
+    process.env.NEXT_PUBLIC_CORE_API_URL ||
+    "http://localhost:3001"
+  ).replace(/\/$/, "");
+}
 
 export default function SiteHeader({
-  locale,
-  onLocaleChange,
   onCart,
+  settings,
 }: {
-  locale: StorefrontLocale;
-  onLocaleChange: (locale: StorefrontLocale) => void;
   onCart?: () => void;
+  settings?: PublicWebsiteSettings;
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<DropdownKey | null>(null);
-  const t = copy[locale];
+  const [mobileOpen,setMobileOpen]=useState(false);
+  const [openId,setOpenId]=useState("");
+  const [nav,setNav]=useState<NavConfig>({version:1,items:[]});
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setMobileOpen(false);
-        setOpenDropdown(null);
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, []);
+  useEffect(()=>{
+    void fetch(`${base()}/storefront/navigation?market=VN`,{cache:"no-store"})
+      .then(r=>r.ok?r.json():null)
+      .then(x=>{if(x?.items)setNav(x)})
+      .catch(()=>{});
+  },[]);
 
-  function mobileDropdownClick(
-    e: React.MouseEvent<HTMLAnchorElement>,
-    key: DropdownKey,
-  ) {
-    if (window.matchMedia("(max-width: 900px)").matches && openDropdown !== key) {
-      e.preventDefault();
-      setOpenDropdown(key);
-    }
-  }
+  useEffect(()=>{
+    const key=(e:KeyboardEvent)=>{if(e.key==="Escape"){setOpenId("");setMobileOpen(false)}};
+    document.addEventListener("keydown",key);
+    return()=>document.removeEventListener("keydown",key);
+  },[]);
 
-  function switchLanguage() {
-    onLocaleChange(locale === "vi" ? "en" : "vi");
-  }
+  const items=nav.items.filter(x=>x.enabled);
 
   return (
-    <header className={`the1970-topbar${mobileOpen ? " is-mobile-open" : ""}`}>
+    <header className={`the1970-topbar${mobileOpen?" is-mobile-open":""}`}>
       <div className="the1970-topbar-inner">
-        <button
-          className="the1970-menu-toggle"
-          type="button"
-          aria-label={mobileOpen ? "Đóng menu" : "Mở menu"}
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? "×" : "☰"}
-        </button>
+        <button className="the1970-menu-toggle" type="button"
+          onClick={()=>setMobileOpen(v=>!v)}>{mobileOpen?"×":"☰"}</button>
 
-        <Link className="the1970-brand" href="/">
-          THE 1970
-        </Link>
+        <Link className="the1970-brand" href="/">THE 1970</Link>
 
-        <nav className="the1970-mainnav" aria-label="Danh mục sản phẩm">
-          <div className={`nav-item has-dropdown${openDropdown === "tshirts" ? " is-open" : ""}`}>
-            <Link href="/collections/t-shirts" onClick={(e) => mobileDropdownClick(e, "tshirts")}>
-              {t.tshirts}
-            </Link>
-            <div className="mega-menu">
-              <div className="mega-menu-grid">
-                <div className="mega-menu-links">
-                  <h4>{t.tshirts}</h4>
-                  <Link href="/collections/t-shirts">{t.allTshirts}</Link>
-                  <Link href="/collections/t-shirts">{t.plainTees}</Link>
-                  <Link href="/collections/t-shirts">{t.heritageTees}</Link>
-                  <Link href="/collections/t-shirts">{t.athleisureTees}</Link>
+        <nav className="the1970-mainnav">
+          {items.map(item=>(
+            <div
+              key={item.id}
+              className={`nav-item${item.type==="MEGA"?" has-dropdown":""}${openId===item.id?" is-open":""}`}
+              onMouseEnter={()=>item.type==="MEGA"&&setOpenId(item.id)}
+              onMouseLeave={()=>item.type==="MEGA"&&setOpenId("")}
+            >
+              <Link
+                href={item.link||"/"}
+                onClick={(e)=>{
+                  if(window.matchMedia("(max-width:900px)").matches && item.type==="MEGA" && openId!==item.id){
+                    e.preventDefault();setOpenId(item.id);
+                  }
+                }}
+              >
+                {item.labelVi}
+              </Link>
+
+              {item.type==="MEGA"?(
+                <div className="mega-menu mega-menu-full">
+                  <div className="mega-menu-full-inner">
+                    <div className="mega-menu-columns">
+                      {item.columns.map(col=>(
+                        <div className="mega-menu-links" key={col.id}>
+                          <h4>{col.titleVi}</h4>
+                          {col.links.filter(x=>x.enabled).map(link=>(
+                            <Link key={link.id} href={link.link||"/"}>{link.labelVi}</Link>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+
+                    {item.promo?.enabled && item.promo.imageUrl?(
+                      <Link href={item.promo.link||item.link||"/"} className="mega-menu-wide-promo">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={item.promo.imageUrl} alt={item.promo.titleVi||item.labelVi}/>
+                        <span>{item.promo.titleVi||item.labelVi}</span>
+                      </Link>
+                    ):null}
+                  </div>
                 </div>
-                <div className="mega-menu-links">
-                  <h4>{t.colorStory}</h4>
-                  <Link href="/collections/all">Olive Ash</Link>
-                  <Link href="/collections/all">Heritage Sage</Link>
-                  <Link href="/collections/all">Tobacco</Link>
-                  <Link href="/collections/all">Vintage Navy</Link>
-                </div>
-                <Link href="/collections/t-shirts" className="mega-menu-image">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn0199.cdn4s.com/media/3e12438546111e95cdfb901fd723bd8b.jpg" alt={t.tshirts} />
-                  <span>{t.shopTshirts}</span>
-                </Link>
-              </div>
+              ):null}
             </div>
-          </div>
-
-          <div className={`nav-item has-dropdown${openDropdown === "shirts" ? " is-open" : ""}`}>
-            <Link href="/collections/shirts" onClick={(e) => mobileDropdownClick(e, "shirts")}>
-              {t.shirts}
-            </Link>
-            <div className="mega-menu">
-              <div className="mega-menu-grid">
-                <div className="mega-menu-links">
-                  <h4>{t.shirts}</h4>
-                  <Link href="/collections/shirts">{t.allShirts}</Link>
-                  <Link href="/collections/shirts">{t.checkedShirts}</Link>
-                  <Link href="/collections/shirts">{t.solidShirts}</Link>
-                  <Link href="/collections/shirts">{t.flannelShirts}</Link>
-                </div>
-                <div className="mega-menu-links">
-                  <h4>{t.highlights}</h4>
-                  <Link href="/collections/all">{t.arrivals}</Link>
-                  <Link href="/collections/all">{t.bestSeller}</Link>
-                  <Link href="/collections/all">{t.seasonal}</Link>
-                </div>
-                <Link href="/collections/shirts" className="mega-menu-image">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn0199.cdn4s.com/media/861%20v%C3%A0ng%208.jpg" alt={t.shirts} />
-                  <span>{t.exploreShirts}</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className={`nav-item has-dropdown${openDropdown === "bottoms" ? " is-open" : ""}`}>
-            <Link href="/collections/pants" onClick={(e) => mobileDropdownClick(e, "bottoms")}>
-              {t.bottoms}
-            </Link>
-            <div className="mega-menu">
-              <div className="mega-menu-grid">
-                <div className="mega-menu-links">
-                  <h4>{t.bottoms}</h4>
-                  <Link href="/collections/pants">{t.allBottoms}</Link>
-                  <Link href="/collections/pants">{t.chinos}</Link>
-                  <Link href="/collections/pants">{t.denim}</Link>
-                  <Link href="/collections/pants">{t.shorts}</Link>
-                </div>
-                <div className="mega-menu-links">
-                  <h4>{t.shopByEdit}</h4>
-                  <Link href="/collections/all">{t.bestSeller}</Link>
-                  <Link href="/collections/all">{t.arrivals}</Link>
-                  <Link href="/collections/all">{t.seasonal}</Link>
-                </div>
-                <Link href="/collections/pants" className="mega-menu-image">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn0199.cdn4s.com/media/861%20%C4%91en%203.jpg" alt={t.bottoms} />
-                  <span>{t.shopBottoms}</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <Link href="/collections/all">{t.arrivals}</Link>
-          <Link href="/collections/all">{t.collection}</Link>
+          ))}
         </nav>
 
         <div className="the1970-top-actions">
-          <Link className="the1970-search-action" href="/collections/all">
-            {t.search}
-          </Link>
-
-          <button
-            type="button"
-            className="the1970-lang-switch"
-            onClick={switchLanguage}
-            aria-label={locale === "vi" ? "Switch to English" : "Chuyển sang tiếng Việt"}
-          >
-            {t.lang}
-          </button>
-
-          <button type="button" className="the1970-cart-button" onClick={onCart}>
-            {t.cart}
-          </button>
+          <Link className="the1970-search-action" href="/collections/all">TÌM KIẾM</Link>
+          <span className="the1970-language">ENG</span>
+          {settings?.cartEnabled ? (
+            <button type="button" className="the1970-cart-action" onClick={onCart}>GIỎ HÀNG</button>
+          ) : null}
         </div>
       </div>
     </header>
