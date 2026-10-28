@@ -33,7 +33,7 @@ export default function CartPage(){
     void fetch(`${base()}/storefront/settings?market=VN`).then(r=>r.json()).then(setSettings).catch(()=>{});
   },[]);
 
-  useEffect(()=>{localStorage.setItem(CART_KEY,JSON.stringify(items))},[items]);
+  useEffect(()=>{localStorage.setItem(CART_KEY,JSON.stringify(items));window.dispatchEvent(new Event("the1970-cart-updated"))},[items]);
 
   const subtotal=useMemo(()=>items.reduce((s,x)=>s+Number(x.price||0)*Number(x.qty||0),0),[items]);
 
@@ -58,7 +58,7 @@ export default function CartPage(){
         body:JSON.stringify({...form,market:"VN",items:items.map(x=>({variantId:x.variantId,qty:x.qty}))})
       });
       const j=await r.json().catch(()=>null);if(!r.ok)throw new Error(j?.message||"Không tạo được đơn.");
-      setOrder(j);localStorage.removeItem(CART_KEY);setItems([]);
+      setOrder(j);localStorage.removeItem(CART_KEY);window.dispatchEvent(new Event("the1970-cart-updated"));setItems([]);
     }catch(e){setError(e instanceof Error?e.message:"Không tạo được đơn.")}finally{setBusy(false)}
   }
 

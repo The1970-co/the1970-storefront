@@ -1,15 +1,17 @@
 export type PublicWebsiteSettings = {
+  market: string;
   cartEnabled: boolean;
   checkoutEnabled: boolean;
   newCustomerDiscountEnabled: boolean;
   newCustomerDiscountPercent: number;
   messengerEnabled: boolean;
-  messengerUrl?: string | null;
+  messengerUrl: string | null;
   zaloEnabled: boolean;
-  zaloUrl?: string | null;
+  zaloUrl: string | null;
 };
 
-export const DEFAULT_WEBSITE_SETTINGS: PublicWebsiteSettings = {
+const DEFAULTS: PublicWebsiteSettings = {
+  market: "VN",
   cartEnabled: false,
   checkoutEnabled: false,
   newCustomerDiscountEnabled: false,
@@ -20,7 +22,7 @@ export const DEFAULT_WEBSITE_SETTINGS: PublicWebsiteSettings = {
   zaloUrl: null,
 };
 
-export function coreBase() {
+function base() {
   return (
     process.env.CORE_API_URL ||
     process.env.NEXT_PUBLIC_CORE_API_URL ||
@@ -28,15 +30,31 @@ export function coreBase() {
   ).replace(/\/$/, "");
 }
 
-export async function getPublicWebsiteSettings(market = "VN") {
+export async function getPublicWebsiteSettings(
+  market = "VN",
+): Promise<PublicWebsiteSettings> {
   try {
-    const res = await fetch(
-      `${coreBase()}/storefront/settings?market=${encodeURIComponent(market)}`,
+    const response = await fetch(
+      `${base()}/storefront/settings?market=${encodeURIComponent(market)}`,
       { cache: "no-store" },
     );
-    if (!res.ok) return DEFAULT_WEBSITE_SETTINGS;
-    return { ...DEFAULT_WEBSITE_SETTINGS, ...(await res.json()) };
+
+    if (!response.ok) return { ...DEFAULTS, market };
+
+    const row = await response.json();
+
+    return {
+      market: String(row?.market || market),
+      cartEnabled: Boolean(row?.cartEnabled),
+      checkoutEnabled: Boolean(row?.checkoutEnabled),
+      newCustomerDiscountEnabled: Boolean(row?.newCustomerDiscountEnabled),
+      newCustomerDiscountPercent: Number(row?.newCustomerDiscountPercent || 0),
+      messengerEnabled: Boolean(row?.messengerEnabled),
+      messengerUrl: row?.messengerUrl || null,
+      zaloEnabled: Boolean(row?.zaloEnabled),
+      zaloUrl: row?.zaloUrl || null,
+    };
   } catch {
-    return DEFAULT_WEBSITE_SETTINGS;
+    return { ...DEFAULTS, market };
   }
 }

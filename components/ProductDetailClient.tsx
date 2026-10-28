@@ -217,6 +217,7 @@ export default function ProductDetailClient({
     }
 
     localStorage.setItem(CART_KEY, JSON.stringify(next));
+    window.dispatchEvent(new Event("the1970-cart-updated"));
     setCart(next);
     setMessage("");
     setCartOpen(true);
@@ -231,6 +232,7 @@ export default function ProductDetailClient({
     const next = [...cart];
     next.splice(index, 1);
     localStorage.setItem(CART_KEY, JSON.stringify(next));
+    window.dispatchEvent(new Event("the1970-cart-updated"));
     setCart(next);
   }
 
@@ -644,7 +646,15 @@ export default function ProductDetailClient({
               <span>Tạm tính</span>
               <strong>{money(cartTotal)}</strong>
             </div>
-            <button type="button">THANH TOÁN</button>
+            <button
+              type="button"
+              onClick={() => {
+                setCartOpen(false);
+                window.location.href = "/cart";
+              }}
+            >
+              THANH TOÁN
+            </button>
           </footer>
         </aside>
       </div>

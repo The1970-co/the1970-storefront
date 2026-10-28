@@ -1,3 +1,29 @@
-import './globals.css';import {headers} from 'next/headers';import Header from '@/components/Header';import Footer from '@/components/Footer';import {marketFromHost} from '@/lib/market';
-export const metadata={title:'THE 1970',description:'The 1970 — Vintage menswear'};
-export default async function Layout({children}:{children:React.ReactNode}){const h=await headers();const market=marketFromHost(h.get('host')||'');return <html lang={market.code==='VN'?'vi':'en'}><body><Header market={market.code}/>{children}<Footer market={market.code}/></body></html>}
+import type { Metadata } from "next";
+import SiteHeader from "@/components/SiteHeader";
+import "./globals.css";
+import "./storefront-editorial.css";
+import "./site-header.css";
+
+export const metadata: Metadata = {
+  title: {
+    default: "THE 1970",
+    template: "%s | THE 1970",
+  },
+  description:
+    "The 1970 — menswear inspired by vintage American style, refined for everyday wear.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="vi">
+      <body>
+        <SiteHeader />
+        {children}
+      </body>
+    </html>
+  );
+}
