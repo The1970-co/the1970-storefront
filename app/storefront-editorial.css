@@ -2614,3 +2614,229 @@ body.menu-open .the1970-editorial {
     font-size: clamp(34px, 11vw, 52px);
   }
 }
+
+
+/* ===== CMS ADVANCED BLOCK / ITEM STYLING ===== */
+.cms-styled-item {
+  position: relative;
+  transition:
+    transform .35s ease,
+    filter .35s ease,
+    box-shadow .35s ease,
+    opacity .35s ease;
+}
+
+.cms-styled-item img,
+.cms-item-media img,
+.cms-fullbleed-media img {
+  object-fit: var(--cms-image-fit, cover) !important;
+  object-position: var(--cms-image-position, center) !important;
+}
+
+.cms-item-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cms-item-media > img {
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cms-reveal {
+  opacity: 0;
+  transition:
+    opacity .7s ease,
+    transform .7s cubic-bezier(.2,.7,.2,1);
+}
+
+.cms-reveal.cms-anim-fade {
+  transform: none;
+}
+
+.cms-reveal.cms-anim-fade-up {
+  transform: translateY(28px);
+}
+
+.cms-reveal.cms-anim-zoom-in {
+  transform: scale(.965);
+}
+
+.cms-reveal.show {
+  opacity: 1;
+  transform: none;
+}
+
+.cms-hover-lift:hover {
+  transform: translateY(-6px);
+}
+
+.cms-hover-zoom {
+  overflow: hidden;
+}
+
+.cms-hover-zoom img {
+  transition: transform .6s cubic-bezier(.2,.7,.2,1);
+}
+
+.cms-hover-zoom:hover img {
+  transform: scale(1.045);
+}
+
+.cms-hover-brighten:hover {
+  filter: brightness(1.06);
+}
+
+/* Cho phép gap thật giữa 4 thẻ khi user chỉnh trong CMS. */
+.editorial-mini-grid {
+  background: transparent;
+}
+
+/* Khi có border radius từ CMS, media và overlay phải cắt theo khung. */
+.editorial-hero.cms-styled-item,
+.editorial-intro.cms-styled-item,
+.editorial-mini-card.cms-styled-item,
+.cms-fullbleed-hero {
+  isolation: isolate;
+}
+
+/* CMS item media cần chiếm đủ thumb/intro */
+.editorial-mini-thumb,
+.editorial-intro-bg {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cms-reveal,
+  .cms-styled-item,
+  .cms-hover-zoom img {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+
+/* ===== FIX: ITEM STYLE MARGIN / PADDING / RADIUS PHẢI HOẠT ĐỘNG THẬT ===== */
+
+/*
+  Trước đây card có height:100% trong grid cell và parent overflow:hidden.
+  Khi thêm margin riêng cho card, tổng kích thước vượt cell -> phần margin bị cắt,
+  nhìn như margin không hoạt động.
+*/
+.editorial-mini-grid {
+  overflow: visible !important;
+  align-items: stretch;
+}
+
+.editorial-mini-card.cms-styled-item {
+  height: auto !important;
+  min-height: 0 !important;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+.editorial-intro.cms-styled-item,
+.editorial-hero.cms-styled-item {
+  box-sizing: border-box;
+}
+
+/* Cho margin riêng của item chiếm diện tích trong grid thay vì bị crop. */
+.cms-styled-item {
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+/*
+  Nếu card có margin, thumb/content vẫn co vào trong khung card.
+  border-radius của item sẽ cắt đúng toàn card.
+*/
+.editorial-mini-card.cms-styled-item,
+.editorial-intro.cms-styled-item,
+.editorial-hero.cms-styled-item {
+  overflow: hidden;
+}
+
+/* Parent bên phải cũng không được cắt margin của item con. */
+.editorial-side {
+  overflow: visible !important;
+}
+
+/*
+  CSS cũ có flex:1 cho thumb; giữ card co giãn nhưng không ép 100% chiều cao.
+*/
+.editorial-mini-thumb {
+  min-height: 0;
+}
+
+/* Padding riêng của item cần được tính trong kích thước cuối. */
+.editorial-mini-card.cms-styled-item > .editorial-mini-thumb,
+.editorial-mini-card.cms-styled-item > .editorial-mini-content {
+  max-width: 100%;
+}
+
+/*
+  Khi user đặt margin 5px bốn phía cho card con:
+  card sẽ lùi 5px khỏi mỗi cạnh của grid cell.
+  Nếu muốn khe giữa 2 card tổng cộng đúng 5px thì đặt mỗi card 2.5px
+  hoặc dùng gap của grid.
+*/
+
+
+/* ===== HOMEPAGE VISUAL EDITOR PREVIEW ===== */
+body:has([data-cms-preview-root="1"]) {
+  cursor: default;
+}
+
+.cms-preview-mode [data-cms-block-id],
+body.cms-preview-mode [data-cms-block-id] {
+  position: relative;
+  cursor: pointer !important;
+}
+
+body.cms-preview-mode [data-cms-block-id]:hover {
+  outline: 2px solid #111 !important;
+  outline-offset: -2px;
+}
+
+body.cms-preview-mode [data-cms-item-id]:hover::after {
+  content: "Bấm để sửa";
+  position: absolute;
+  z-index: 99999;
+  top: 10px;
+  left: 10px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font: 700 11px/1 Arial, sans-serif;
+  letter-spacing: .04em;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,.2);
+}
+
+body.cms-preview-mode [data-cms-block-id]:hover::before {
+  content: attr(data-cms-label);
+  position: absolute;
+  z-index: 99998;
+  right: 10px;
+  top: 10px;
+  max-width: 240px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.96);
+  color: #111;
+  border: 1px solid rgba(0,0,0,.16);
+  font: 700 11px/1 Arial, sans-serif;
+  pointer-events: none;
+}
+
+body.cms-preview-mode .cms-preview-selected {
+  outline: 3px solid #111 !important;
+  outline-offset: -3px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.8);
+}
