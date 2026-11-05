@@ -2,7 +2,6 @@ import { headers } from "next/headers";
 import { getProducts } from "@/lib/core-api";
 import { marketFromHost } from "@/lib/market";
 import { getHomepageConfig } from "@/lib/homepage-api";
-import { getPublicWebsiteSettings } from "@/lib/website-settings";
 import StorefrontHomeClient, {
   type HomeProduct,
 } from "@/components/StorefrontHomeClient";
@@ -39,10 +38,9 @@ export default async function HomePage() {
       ? "VN"
       : detectedMarket.code;
 
-  const [raw, homepage, settings] = await Promise.all([
+  const [raw, homepage] = await Promise.all([
     getProducts(catalogMarket),
     getHomepageConfig(homepageMarket),
-    getPublicWebsiteSettings(homepageMarket),
   ]);
 
   const products: HomeProduct[] = raw.map((p) => {
@@ -83,7 +81,6 @@ export default async function HomePage() {
     <StorefrontHomeClient
       products={products}
       homepage={homepage}
-      settings={settings}
     />
   );
 }
