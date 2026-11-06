@@ -45,9 +45,9 @@ type NavigationSettings = {
   announcementEnabled: boolean;
   announcementTextVi: string;
   announcementLink: string;
-  headerLogoUrl?: string;
-  headerLogoWidth?: number;
-  headerLogoAlign?: "LEFT" | "CENTER" | "RIGHT";
+  headerLogoUrl: string;
+  headerLogoWidth: number;
+  headerLogoAlign: "LEFT" | "CENTER" | "RIGHT";
 };
 
 type NavItem = {
@@ -280,16 +280,12 @@ function normalizeNavigation(raw: any): NavigationConfig {
           DEFAULT_NAV_SETTINGS.announcementTextVi,
       ).trim() || DEFAULT_NAV_SETTINGS.announcementTextVi,
     announcementLink: String(rawSettings.announcementLink || "").trim(),
-    headerLogoUrl: String(
-      rawSettings.headerLogoUrl ??
-        DEFAULT_NAV_SETTINGS.headerLogoUrl ??
-        "",
-    ).trim(),
+    headerLogoUrl: String(rawSettings.headerLogoUrl || "").trim(),
     headerLogoWidth: clampNumber(
       rawSettings.headerLogoWidth,
       40,
       260,
-      DEFAULT_NAV_SETTINGS.headerLogoWidth || 118,
+      DEFAULT_NAV_SETTINGS.headerLogoWidth,
     ),
     headerLogoAlign:
       rawSettings.headerLogoAlign === "CENTER"
@@ -547,28 +543,26 @@ export default function SiteHeader() {
             href="/"
             aria-label="The 1970"
             style={{
-              justifySelf:
-                navigation.settings.headerLogoAlign === "RIGHT"
-                  ? "end"
-                  : navigation.settings.headerLogoAlign === "CENTER"
-                    ? "center"
-                    : "start",
+              justifyContent:
+                navigation.settings.headerLogoAlign === "CENTER"
+                  ? "center"
+                  : navigation.settings.headerLogoAlign === "RIGHT"
+                    ? "flex-end"
+                    : "flex-start",
             }}
           >
             {navigation.settings.headerLogoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                className="site-brand-image"
+                key={navigation.settings.headerLogoUrl}
                 src={navigation.settings.headerLogoUrl}
                 alt="The 1970"
                 style={{
-                  width: `${Math.max(
-                    40,
-                    Math.min(
-                      260,
-                      Number(navigation.settings.headerLogoWidth || 118),
-                    ),
-                  )}px`,
+                  display: "block",
+                  width: `${navigation.settings.headerLogoWidth}px`,
+                  maxWidth: "100%",
+                  maxHeight: "48px",
+                  objectFit: "contain",
                 }}
               />
             ) : (
