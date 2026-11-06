@@ -224,29 +224,6 @@ const FALLBACK_NAVIGATION: NavigationConfig = {
 
 const CART_KEY = "the1970_cart";
 
-function coreBase() {
-  const PROD_CORE =
-    "https://the1970-core-api-production.up.railway.app";
-
-  if (typeof window !== "undefined") {
-    const host = window.location.hostname.toLowerCase();
-
-    if (host === "localhost" || host === "127.0.0.1") {
-      return (
-        process.env.NEXT_PUBLIC_CORE_API_URL ||
-        "http://localhost:3001"
-      ).replace(/\/$/, "");
-    }
-
-    return PROD_CORE;
-  }
-
-  return (
-    process.env.CORE_API_URL ||
-    process.env.NEXT_PUBLIC_CORE_API_URL ||
-    PROD_CORE
-  ).replace(/\/$/, "");
-}
 
 function clampNumber(value: unknown, min: number, max: number, fallback: number) {
   const number = Number(value);
@@ -407,7 +384,7 @@ export default function SiteHeader() {
 
     // Navigation phải độc lập với Website Settings.
     // Settings lỗi không được phép làm mất menu/logo và rơi về fallback.
-    void fetch(`${coreBase()}/storefront/navigation?market=VN`, {
+    void fetch("/api/storefront/navigation?market=VN", {
       cache: "no-store",
     })
       .then(async (response) => {
@@ -425,7 +402,7 @@ export default function SiteHeader() {
         // Không reset do lỗi của endpoint khác.
       });
 
-    void fetch(`${coreBase()}/storefront/settings?market=VN`, {
+    void fetch("/api/storefront/settings?market=VN", {
       cache: "no-store",
     })
       .then(async (response) => {
