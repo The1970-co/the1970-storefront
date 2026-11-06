@@ -279,7 +279,7 @@ function normalizeNavigation(raw: any): NavigationConfig {
     headerLogoWidth: clampNumber(
       rawSettings.headerLogoWidth,
       40,
-      260,
+      420,
       DEFAULT_NAV_SETTINGS.headerLogoWidth,
     ),
     headerLogoAlign:
@@ -563,6 +563,7 @@ export default function SiteHeader() {
             {navigation.settings.headerLogoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
+                className="site-brand-logo"
                 key={navigation.settings.headerLogoUrl}
                 src={navigation.settings.headerLogoUrl}
                 alt="The 1970"
@@ -570,7 +571,7 @@ export default function SiteHeader() {
                   display: "block",
                   width: `${navigation.settings.headerLogoWidth}px`,
                   maxWidth: "100%",
-                  maxHeight: "48px",
+                  maxHeight: "64px",
                   objectFit: "contain",
                 }}
               />
