@@ -231,24 +231,19 @@ function coreBase() {
   if (typeof window !== "undefined") {
     const host = window.location.hostname.toLowerCase();
 
-    if (
-      host === "localhost" ||
-      host === "127.0.0.1"
-    ) {
+    if (host === "localhost" || host === "127.0.0.1") {
       return (
         process.env.NEXT_PUBLIC_CORE_API_URL ||
         "http://localhost:3001"
       ).replace(/\/$/, "");
     }
 
-    // Storefront production luôn đọc đúng Core production.
-    // Không để NEXT_PUBLIC_CORE_API_URL cũ / thiếu làm rơi về fallback menu.
     return PROD_CORE;
   }
 
   return (
-    process.env.NEXT_PUBLIC_CORE_API_URL ||
     process.env.CORE_API_URL ||
+    process.env.NEXT_PUBLIC_CORE_API_URL ||
     PROD_CORE
   ).replace(/\/$/, "");
 }
@@ -410,30 +405,44 @@ export default function SiteHeader() {
   useEffect(() => {
     let alive = true;
 
-    Promise.all([
-      fetch(`${coreBase()}/storefront/navigation?market=VN`, {
-        cache: "no-store",
-      }).then(async (response) => {
-        if (!response.ok) throw new Error(`Navigation ${response.status}`);
+    // Navigation phải độc lập với Website Settings.
+    // Settings lỗi không được phép làm mất menu/logo và rơi về fallback.
+    void fetch(`${coreBase()}/storefront/navigation?market=VN`, {
+      cache: "no-store",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Navigation ${response.status}`);
+        }
         return response.json();
-      }),
-      fetch(`${coreBase()}/storefront/settings?market=VN`, {
-        cache: "no-store",
-      }).then(async (response) => {
-        if (!response.ok) throw new Error(`Settings ${response.status}`);
-        return response.json();
-      }),
-    ])
-      .then(([navigationData, settingsData]) => {
+      })
+      .then((navigationData) => {
         if (!alive) return;
         setNavigation(normalizeNavigation(navigationData));
+      })
+      .catch(() => {
+        // Chỉ giữ fallback hiện tại nếu navigation thật sự lỗi.
+        // Không reset do lỗi của endpoint khác.
+      });
+
+    void fetch(`${coreBase()}/storefront/settings?market=VN`, {
+      cache: "no-store",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Settings ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((settingsData) => {
+        if (!alive) return;
         setWebsiteSettings({
           cartEnabled: Boolean(settingsData?.cartEnabled),
         });
       })
       .catch(() => {
-        if (!alive) return;
-        setNavigation(FALLBACK_NAVIGATION);
+        // Settings lỗi thì giữ default settings,
+        // tuyệt đối không tác động tới navigation/logo.
       });
 
     return () => {
