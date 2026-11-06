@@ -225,8 +225,31 @@ const FALLBACK_NAVIGATION: NavigationConfig = {
 const CART_KEY = "the1970_cart";
 
 function coreBase() {
+  const PROD_CORE =
+    "https://the1970-core-api-production.up.railway.app";
+
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname.toLowerCase();
+
+    if (
+      host === "localhost" ||
+      host === "127.0.0.1"
+    ) {
+      return (
+        process.env.NEXT_PUBLIC_CORE_API_URL ||
+        "http://localhost:3001"
+      ).replace(/\/$/, "");
+    }
+
+    // Storefront production luôn đọc đúng Core production.
+    // Không để NEXT_PUBLIC_CORE_API_URL cũ / thiếu làm rơi về fallback menu.
+    return PROD_CORE;
+  }
+
   return (
-    process.env.NEXT_PUBLIC_CORE_API_URL || "http://localhost:3001"
+    process.env.NEXT_PUBLIC_CORE_API_URL ||
+    process.env.CORE_API_URL ||
+    PROD_CORE
   ).replace(/\/$/, "");
 }
 
