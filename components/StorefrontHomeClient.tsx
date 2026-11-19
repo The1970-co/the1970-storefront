@@ -20,6 +20,108 @@ function formatPrice(value: number) {
   return new Intl.NumberFormat("vi-VN").format(value) + "đ";
 }
 
+
+function cmsItemTextStyle(item: HomepageItem | null | undefined) {
+  const style = ((item as any)?.style || {}) as Record<string, any>;
+
+  const font = (value: unknown) =>
+    value === "SERIF"
+      ? 'Georgia, "Times New Roman", serif'
+      : "Arial, sans-serif";
+
+  return {
+    positionY:
+      style.textPositionY === "TOP" || style.textPositionY === "CENTER"
+        ? style.textPositionY
+        : "BOTTOM",
+    align:
+      style.textAlign === "CENTER" || style.textAlign === "RIGHT"
+        ? style.textAlign
+        : "LEFT",
+    subtitleFont: font(style.subtitleFont),
+    titleFont: font(style.titleFont),
+    bodyFont: font(style.bodyFont),
+    subtitleFontSizePx: Math.max(
+      8,
+      Math.min(40, Number(style.subtitleFontSizePx || 11)),
+    ),
+    titleFontSizePx: Math.max(
+      12,
+      Math.min(120, Number(style.titleFontSizePx || 24)),
+    ),
+    bodyFontSizePx: Math.max(
+      10,
+      Math.min(60, Number(style.bodyFontSizePx || 15)),
+    ),
+    titleFontWeight: Math.max(
+      100,
+      Math.min(900, Number(style.titleFontWeight || 600)),
+    ),
+    titleLineHeight: Math.max(
+      0.8,
+      Math.min(2, Number(style.titleLineHeight || 1.08)),
+    ),
+    textMaxWidthPx: Math.max(
+      120,
+      Math.min(1400, Number(style.textMaxWidthPx || 500)),
+    ),
+    textInsetXPx: Math.max(
+      0,
+      Math.min(240, Number(style.textInsetXPx || 28)),
+    ),
+    textInsetYPx: Math.max(
+      0,
+      Math.min(240, Number(style.textInsetYPx || 28)),
+    ),
+  };
+}
+
+function cmsTextContainerStyle(item: HomepageItem | null | undefined) {
+  const ts = cmsItemTextStyle(item);
+
+  const result: Record<string, any> = {
+    left: `${ts.textInsetXPx}px`,
+    right: `${ts.textInsetXPx}px`,
+    textAlign: ts.align.toLowerCase(),
+  };
+
+  if (ts.positionY === "TOP") {
+    result.top = `${ts.textInsetYPx}px`;
+    result.bottom = "auto";
+    result.transform = "none";
+  } else if (ts.positionY === "CENTER") {
+    result.top = "50%";
+    result.bottom = "auto";
+    result.transform = "translateY(-50%)";
+  } else {
+    result.top = "auto";
+    result.bottom = `${ts.textInsetYPx}px`;
+    result.transform = "none";
+  }
+
+  return result;
+}
+
+function cmsTextLineStyle(item: HomepageItem | null | undefined) {
+  const ts = cmsItemTextStyle(item);
+  const result: Record<string, any> = {
+    maxWidth: `${ts.textMaxWidthPx}px`,
+  };
+
+  if (ts.align === "CENTER") {
+    result.marginLeft = "auto";
+    result.marginRight = "auto";
+  } else if (ts.align === "RIGHT") {
+    result.marginLeft = "auto";
+    result.marginRight = 0;
+  } else {
+    result.marginLeft = 0;
+    result.marginRight = "auto";
+  }
+
+  return result;
+}
+
 function firstImage(item: HomepageItem | null | undefined) {
   return item?.images?.find((image) => String(image?.url || "").trim())?.url || "";
 }
@@ -37,6 +139,8 @@ export default function StorefrontHomeClient({
   homepage: HomepageConfig | null;
 }) {
   const [quick, setQuick] = useState<HomeProduct | null>(null);
+  const [previewHomepage, setPreviewHomepage] =
+    useState<HomepageConfig | null>(homepage);
 
   useEffect(() => {
     const nodes = document.querySelectorAll(".fade-up");
@@ -54,6 +158,43 @@ export default function StorefrontHomeClient({
 
 
   useEffect(() => {
+    setPreviewHomepage(homepage);
+  }, [homepage]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const isCmsPreview = params.get("cmsPreview") === "1";
+    if (!isCmsPreview) return;
+
+    function onMessage(event: MessageEvent) {
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+
+      if (
+        data.type === "THE1970_HOMEPAGE_PREVIEW_CONFIG" &&
+        data.config
+      ) {
+        setPreviewHomepage(data.config as HomepageConfig);
+      }
+    }
+
+    window.addEventListener("message", onMessage);
+
+    window.parent?.postMessage(
+      {
+        type: "THE1970_HOMEPAGE_PREVIEW_READY",
+      },
+      "*",
+    );
+
+    return () => {
+      window.removeEventListener("message", onMessage);
+    };
+  }, []);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setQuick(null);
@@ -63,15 +204,17 @@ export default function StorefrontHomeClient({
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
+  const effectiveHomepage = previewHomepage || homepage;
+
   const fullBleedBlock =
-    homepage?.blocks?.find(
+    effectiveHomepage?.blocks?.find(
       (block) => block.enabled && block.type === "FULL_BLEED_HERO",
     ) || null;
 
   const fullBleedItem = fullBleedBlock?.items?.[0] || null;
 
   const heroBlock =
-    homepage?.blocks?.find(
+    effectiveHomepage?.blocks?.find(
       (block) => block.enabled && block.type === "HERO_SPLIT",
     ) || null;
 
@@ -84,28 +227,28 @@ export default function StorefrontHomeClient({
   const miniItems = (heroBlock?.items || []).slice(2, 6);
 
   const cardRowBlock =
-    homepage?.blocks?.find(
+    effectiveHomepage?.blocks?.find(
       (block) => block.enabled && block.type === "CARD_ROW",
     ) || null;
 
   const cardRowItems = cardRowBlock?.items || [];
 
   const storyWideBlock =
-    homepage?.blocks?.find(
+    effectiveHomepage?.blocks?.find(
       (block) => block.enabled && block.type === "STORY_WIDE",
     ) || null;
 
   const storyWideItem = storyWideBlock?.items?.[0] || null;
 
   const storySplitBlock =
-    homepage?.blocks?.find(
+    effectiveHomepage?.blocks?.find(
       (block) => block.enabled && block.type === "STORY_SPLIT",
     ) || null;
 
   const storySplitItems = storySplitBlock?.items || [];
 
   const productGridBlock =
-    homepage?.blocks?.find(
+    effectiveHomepage?.blocks?.find(
       (block) =>
         block.enabled &&
         block.type === "PRODUCT_GRID" &&
@@ -139,16 +282,45 @@ export default function StorefrontHomeClient({
                     heroItem.titleVi ||
                     heroItem.bodyVi ||
                     heroItem.ctaVi) ? (
-                    <div className="editorial-hero-content">
+                    <div className="editorial-hero-content" style={cmsTextContainerStyle(heroItem)}>
                       {heroItem.subtitleVi ? (
-                        <div className="editorial-kicker">
+                        <div
+                          className="editorial-kicker"
+                          style={{
+                            ...cmsTextLineStyle(heroItem),
+                            fontFamily: cmsItemTextStyle(heroItem).subtitleFont,
+                            fontSize: `${cmsItemTextStyle(heroItem).subtitleFontSizePx}px`,
+                          }}
+                        >
                           {heroItem.subtitleVi}
                         </div>
                       ) : null}
 
-                      {heroItem.titleVi ? <h2>{heroItem.titleVi}</h2> : null}
+                      {heroItem.titleVi ? (
+                        <h2
+                          style={{
+                            ...cmsTextLineStyle(heroItem),
+                            fontFamily: cmsItemTextStyle(heroItem).titleFont,
+                            fontSize: `${cmsItemTextStyle(heroItem).titleFontSizePx}px`,
+                            fontWeight: cmsItemTextStyle(heroItem).titleFontWeight,
+                            lineHeight: cmsItemTextStyle(heroItem).titleLineHeight,
+                          }}
+                        >
+                          {heroItem.titleVi}
+                        </h2>
+                      ) : null}
 
-                      {heroItem.bodyVi ? <p>{heroItem.bodyVi}</p> : null}
+                      {heroItem.bodyVi ? (
+                        <p
+                          style={{
+                            ...cmsTextLineStyle(heroItem),
+                            fontFamily: cmsItemTextStyle(heroItem).bodyFont,
+                            fontSize: `${cmsItemTextStyle(heroItem).bodyFontSizePx}px`,
+                          }}
+                        >
+                          {heroItem.bodyVi}
+                        </p>
+                      ) : null}
 
                       {heroItem.ctaVi ? (
                         <div className="editorial-hero-actions">
@@ -186,16 +358,45 @@ export default function StorefrontHomeClient({
                       introItem.titleVi ||
                       introItem.bodyVi ||
                       introItem.ctaVi) ? (
-                      <div className="editorial-intro-inner">
+                      <div className="editorial-intro-inner" style={cmsTextContainerStyle(introItem)}>
                         {introItem.subtitleVi ? (
-                          <div className="editorial-side-kicker">
+                          <div
+                            className="editorial-side-kicker"
+                            style={{
+                              ...cmsTextLineStyle(introItem),
+                              fontFamily: cmsItemTextStyle(introItem).subtitleFont,
+                              fontSize: `${cmsItemTextStyle(introItem).subtitleFontSizePx}px`,
+                            }}
+                          >
                             {introItem.subtitleVi}
                           </div>
                         ) : null}
 
-                        {introItem.titleVi ? <h3>{introItem.titleVi}</h3> : null}
+                        {introItem.titleVi ? (
+                          <h3
+                            style={{
+                              ...cmsTextLineStyle(introItem),
+                              fontFamily: cmsItemTextStyle(introItem).titleFont,
+                              fontSize: `${cmsItemTextStyle(introItem).titleFontSizePx}px`,
+                              fontWeight: cmsItemTextStyle(introItem).titleFontWeight,
+                              lineHeight: cmsItemTextStyle(introItem).titleLineHeight,
+                            }}
+                          >
+                            {introItem.titleVi}
+                          </h3>
+                        ) : null}
 
-                        {introItem.bodyVi ? <p>{introItem.bodyVi}</p> : null}
+                        {introItem.bodyVi ? (
+                          <p
+                            style={{
+                              ...cmsTextLineStyle(introItem),
+                              fontFamily: cmsItemTextStyle(introItem).bodyFont,
+                              fontSize: `${cmsItemTextStyle(introItem).bodyFontSizePx}px`,
+                            }}
+                          >
+                            {introItem.bodyVi}
+                          </p>
+                        ) : null}
 
                         {introItem.ctaVi ? (
                           <Link
